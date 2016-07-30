@@ -18,4 +18,5 @@ Pod::Spec.new do |s|
 
   s.ios.deployment_target = '6.0'
   s.source_files = 'AYQuery/Classes/**/*'
+  s.public_header_files = 'AYQuery/Classes/*.h'
 end
