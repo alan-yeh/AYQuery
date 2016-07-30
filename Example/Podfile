@@ -1,0 +1,11 @@
+use_frameworks!
+
+target 'AYQuery_Example' do
+  pod 'AYQuery', :path => '../'
+
+  target 'AYQuery_Tests' do
+    inherit! :search_paths
+
+    
+  end
+end
