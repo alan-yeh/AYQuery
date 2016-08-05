@@ -11,6 +11,7 @@
 @class AYTuple;
 
 @interface AYQueryable : NSObject<NSFastEnumeration>
++ (instancetype)nilQuery;
 - (instancetype)init __attribute__((unavailable("不允许直接实例化")));
 + (instancetype)new __attribute__((unavailable("不允许直接实例化")));
 

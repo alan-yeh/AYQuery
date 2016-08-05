@@ -31,6 +31,10 @@
 @end
 
 @implementation AYQueryable
++ (instancetype)nilQuery{
+    return [[self alloc] initWithDatasource:[NSArray new]];
+}
+
 - (instancetype)initWithDatasource:(NSArray<AYTuple *> *)datasource{
     if (self = [super init]) {
         self.queryable = datasource;

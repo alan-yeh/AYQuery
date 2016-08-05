@@ -10,6 +10,10 @@
 #import "AYQueryable.h"
 #import "AYTuple.h"
 
+AYQueryable *AYQueryMake(id<AYQuery> query){
+    return query.query ?: [AYQueryable nilQuery];
+}
+
 @implementation NSArray (AYQuery)
 - (AYQueryable *)query{
     NSMutableArray *datasource = [NSMutableArray new];

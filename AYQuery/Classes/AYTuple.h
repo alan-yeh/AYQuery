@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import <AYQuery/metamacros.h>
 
-//
+
 #define AYTupleArray(...) ([AYTuple tupleWithObjects:@[metamacro_foreach(_ay_object_or_nil,, __VA_ARGS__)]])
 
 #define AYTupleObject(...) \
