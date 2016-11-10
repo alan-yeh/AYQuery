@@ -304,6 +304,22 @@
     };
 }
 
+- (AYQueryable *(^)())flatten{
+    return ^(){
+        NSMutableArray *result = [NSMutableArray new];
+        
+        for (id<AYQuery> value in self.queryable) {
+            if ([value conformsToProtocol:@protocol(AYQuery)]) {
+                [result addObjectsFromArray:value.query.queryable];
+            }else{
+                [result addObject:value];
+            }
+        }
+        
+        return result.query;
+    };
+}
+
 - (NSString *(^)(NSString *))join{
     return ^(NSString *seperator){
         NSMutableString *result = [NSMutableString string];

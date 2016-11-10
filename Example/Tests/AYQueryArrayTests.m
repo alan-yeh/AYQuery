@@ -76,6 +76,8 @@
     
     XCTAssert([stu isKindOfClass:[Student class]]);
     XCTAssert([stu.name isEqualToString:@"张2"]);
+    
+    
 }
 
 - (void)testSelect{
@@ -205,6 +207,10 @@
     
     addedArray = data.query.add(@92).array();
     isEquals = [addedArray isEqualToArray:@[@1, @3, @9, @0, @9, @-4, @55, @92]];
+    XCTAssert(isEquals);
+    
+    NSArray *flattenArray = [NSMutableArray arrayWithObjects:@1, @5, @8, @[@2, @6], @{@"3": @3, @"4": @4}, nil].query.flatten().array();
+    isEquals = [flattenArray isEqualToArray:@[@1, @5, @8, @2, @6, AYPairMake(@"3", @3), AYPairMake(@"4", @4)]];
     XCTAssert(isEquals);
 }
 

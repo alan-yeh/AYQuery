@@ -54,6 +54,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (readonly) AYQueryable *(^orderBy)(NSComparisonResult(^)(id, id));/**< 排序 */
 @property (readonly) AYQueryable *(^distinct)();/**< 去重 */
 @property (readonly) AYQueryable *(^reverse)();/**< 反序 */
+@property (readonly) AYQueryable *(^flatten)();/**< 扁平化 */
 @property (readonly) NSString *(^join)(NSString *seperator);/**< 将所有item连接起来 */
 @property (readonly) AYQueryable *(^minus)(id<AYQuery>);/**< 移除item */
 @property (readonly) AYQueryable *(^add)(id);/**< 添加item */
