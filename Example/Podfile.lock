@@ -1,9 +1,12 @@
 PODS:
+  - AYCategory (1.0.7):
+    - AYRuntime
   - AYQuery (2.0.0):
     - AYRuntime
   - AYRuntime (1.0.4)
 
 DEPENDENCIES:
+  - AYCategory
   - AYQuery (from `../`)
 
 EXTERNAL SOURCES:
@@ -11,9 +14,10 @@ EXTERNAL SOURCES:
     :path: ../
 
 SPEC CHECKSUMS:
+  AYCategory: 26a4df62af2d5444d55a1440805359e5361d7015
   AYQuery: 49ed0bf343f9a3082d2f19291d425757d5f2bf4e
   AYRuntime: 3052eedd222ae63314fefbd525c4940a6bc1e699
 
-PODFILE CHECKSUM: d4b457114300e8d89c25315fa8fa74ba115c21c4
+PODFILE CHECKSUM: 27888030ca80bb0ddfe9a7c7c6a34689f9d104d9
 
 COCOAPODS: 1.1.1

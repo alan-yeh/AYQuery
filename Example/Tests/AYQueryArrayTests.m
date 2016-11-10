@@ -8,6 +8,7 @@
 
 #import <XCTest/XCTest.h>
 #import <AYQuery/AYQuery.h>
+#import <AYCategory/AYCategory.h>
 
 #import "Student.h"
 #import "Teacher.h"
@@ -50,6 +51,12 @@
             [self.data addObject:newStu];
         }
     }
+}
+
+- (void)testOptional{
+    NSArray *array = nil;
+    NSSet *set = AYOptional(NSArray, array).query.set();
+    XCTAssert(set != nil && set.count < 1 && [set isKindOfClass:[NSSet class]]);
 }
 
 - (void)testFind{

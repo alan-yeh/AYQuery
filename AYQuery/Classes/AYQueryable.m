@@ -28,9 +28,6 @@
 @end
 
 @implementation AYQueryable
-+ (instancetype)nilQuery{
-    return [[self alloc] initWithDatasource:[NSArray new]];
-}
 
 - (instancetype)initWithDatasource:(NSArray *)datasource{
     if (self = [super init]) {
@@ -60,9 +57,17 @@
 
 - (id)objectAtIndexedSubscript:(NSInteger)idx{
     if (idx < 0) {
-        return self.queryable[self.queryable.count + idx];
+        if (- idx > self.queryable.count) {
+            return nil;
+        }else{
+            return self.queryable[self.queryable.count + idx];
+        }
     }else{
-        return self.queryable[idx];
+        if (idx >= self.queryable.count) {
+            return nil;
+        }else{
+            return self.queryable[idx];
+        }
     }
 }
 
@@ -218,11 +223,11 @@
 @implementation AYQueryable (Operation)
 
 - (id)first{
-    return self.queryable.firstObject;
+    return self[0];
 }
 
 - (id)last{
-    return self.queryable.lastObject;
+    return self[-1];
 }
 
 - (id (^)(NSUInteger))get{
@@ -232,14 +237,20 @@
 }
 
 - (id (^)(NSComparisonResult (^)(id, id)))max{
-    return ^(NSComparisonResult (^cmptr)(id, id)){
+    return ^id(NSComparisonResult (^cmptr)(id, id)){
+        if (self.queryable.count < 1) {
+            return nil;
+        }
         NSArray *result = [self.queryable sortedArrayUsingComparator:cmptr];
         return result.firstObject;
     };
 }
 
 - (id (^)(NSComparisonResult (^)(id, id)))min{
-    return ^(NSComparisonResult (^cmptr)(id, id)){
+    return ^id(NSComparisonResult (^cmptr)(id, id)){
+        if (self.queryable.count < 1) {
+            return nil;
+        }
         self.queryable = [self.queryable sortedArrayUsingComparator:cmptr];
         return self.queryable.lastObject;
     };
@@ -253,6 +264,9 @@
 
 - (BOOL (^)(BOOL(^)(id)))any{
     return ^BOOL(BOOL(^any)(id)){
+        if (self.queryable.count < 1) {
+            return NO;
+        }
         for (id value in self.queryable) {
             BOOL isSatisfied = NO;
             [self _invocak_block:any withArg:value andReturn:&isSatisfied];

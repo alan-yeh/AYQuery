@@ -13,14 +13,13 @@ NS_ASSUME_NONNULL_BEGIN
 @class AYPair;
 
 @interface AYQueryable : NSObject<NSFastEnumeration>
-+ (instancetype)nilQuery;
 - (instancetype)init __attribute__((unavailable("不允许直接实例化")));
 + (instancetype)new __attribute__((unavailable("不允许直接实例化")));
 
 - (instancetype)initWithDatasource:(NSArray *)datasource;
 
-/** 如果是负数，则返回倒数元素，如query[-1]就是列表最后一个元素 */
-- (id)objectAtIndexedSubscript:(NSInteger)idx;
+/** 如果是负数，则返回倒数元素，如query[-1]就是列表最后一个元素，如果超界了，则返回nil */
+- (_Nullable id)objectAtIndexedSubscript:(NSInteger)idx;
 @property (readonly) void(^each)(id);/**< 遍历 */
 @property (readonly) void(^reverseEach)(id);/**< 反向遍历 */
 @end
@@ -28,7 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 // 筛选与投影
 @interface AYQueryable (Select)
 @property (readonly) AYQueryable *(^findAll)(BOOL(^)(id));/**< 查找满足条件的所有元素 */
-@property (readonly) id (^find)(BOOL(^)(id));/**< 查找满足条件的第一个元素 */
+@property (readonly) _Nullable id (^find)(BOOL(^)(id));/**< 查找满足条件的第一个元素 */
 @property (readonly) AYQueryable *(^select)(id(^)(id));/**< 在每一个元素上执行操作并返回一个结果集 */
 @property (readonly) AYQueryable *(^groupBy)(id(^)(id));/**< 按条件分组 */
 @end
@@ -45,11 +44,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 // 元素操作
 @interface AYQueryable (Operation)
-@property (readonly) id first;/**< 第一个item */
-@property (readonly) id last;/**< 最后一个item */
-@property (readonly) id (^get)(NSUInteger);/**< 取第N个item，如果N为负数，则从后开始取值 */
-@property (readonly) id (^max)(NSComparisonResult(^)(id, id));/**< 取最大值 */
-@property (readonly) id (^min)(NSComparisonResult(^)(id, id));/**< 去最小值 */
+@property (readonly) _Nullable id first;/**< 第一个item，如果query没有item则返回nil */
+@property (readonly) _Nullable id last;/**< 最后一个item，如果query没有item则返回nil */
+@property (readonly) _Nullable id (^get)(NSUInteger);/**< 取第N个item，如果N为负数，则从后开始取值，如果超界了，则返回nil */
+@property (readonly) _Nullable id (^max)(NSComparisonResult(^)(id, id));/**< 取最大值 */
+@property (readonly) _Nullable id (^min)(NSComparisonResult(^)(id, id));/**< 去最小值 */
 @property (readonly) BOOL (^contains)(id);/**< 是否包含某个item，使用isEquals来判断 */
 @property (readonly) BOOL (^any)(BOOL(^)(id));/**< 判断是否有item满足条件 */
 @property (readonly) AYQueryable *(^orderBy)(NSComparisonResult(^)(id, id));/**< 排序 */

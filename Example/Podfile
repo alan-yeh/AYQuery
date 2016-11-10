@@ -2,6 +2,7 @@ use_frameworks!
 
 target 'AYQuery_Example' do
   pod 'AYQuery', :path => '../'
+  pod 'AYCategory'
 
   target 'AYQuery_Tests' do
     inherit! :search_paths

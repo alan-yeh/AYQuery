@@ -14,9 +14,6 @@
 @property (readonly) AYQueryable *query;
 @end
 
-FOUNDATION_EXPORT AYQueryable *AYQueryMake(id<AYQuery> query);
-
-
 #pragma mark - Supported collections types
 @interface NSArray (AYQuery) <AYQuery> @end
 @interface NSDictionary (AYQuery) <AYQuery> @end
