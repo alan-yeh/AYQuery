@@ -1,8 +1,8 @@
 //
 //  AYPair.m
-//  Pods
+//  AYQuery
 //
-//  Created by alan on 2016/11/9.
+//  Created by Alan Yeh on 2016/11/9.
 //
 //
 

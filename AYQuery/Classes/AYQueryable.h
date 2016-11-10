@@ -56,7 +56,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (readonly) AYQueryable *(^reverse)();/**< 反序 */
 @property (readonly) NSString *(^join)(NSString *seperator);/**< 将所有item连接起来 */
 @property (readonly) AYQueryable *(^minus)(id<AYQuery>);/**< 移除item */
-@property (readonly) AYQueryable *(^add)(id<AYQuery>);/**< 添加item */
+@property (readonly) AYQueryable *(^add)(id);/**< 添加item */
+@property (readonly) AYQueryable *(^addAll)(id<AYQuery>);/**< 添加item */
 @end
 
 @class AYTuple;

@@ -336,7 +336,19 @@
     };
 }
 
-- (AYQueryable *(^)(id<AYQuery>))add{
+- (AYQueryable *(^)(id))add{
+    return ^(id item){
+        if (item == nil) {
+            return self.queryable.query;
+        }
+        
+        NSMutableArray *result = self.queryable.mutableCopy;
+        [result addObject:item];
+        return result.query;
+    };
+}
+
+- (AYQueryable *(^)(id<AYQuery>))addAll{
     return ^(id<AYQuery> collection){
         if (collection.query.count < 1) {
             return self.queryable.query;

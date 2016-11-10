@@ -199,8 +199,12 @@
     isEquals = [minusedArray isEqualToArray:@[@1, @9, @9, @-4]];
     XCTAssert(isEquals);
     
-    NSArray *addedArray = data.query.add(@[@920, @658]).array();
+    NSArray *addedArray = data.query.addAll(@[@920, @658]).array();
     isEquals = [addedArray isEqualToArray:@[@1, @3, @9, @0, @9, @-4, @55, @920, @658]];
+    XCTAssert(isEquals);
+    
+    addedArray = data.query.add(@92).array();
+    isEquals = [addedArray isEqualToArray:@[@1, @3, @9, @0, @9, @-4, @55, @92]];
     XCTAssert(isEquals);
 }
 
