@@ -11,7 +11,7 @@
 		5D72BB921D4C6C450002F6F6 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5D72BB911D4C6C450002F6F6 /* Launch Screen.storyboard */; };
 		5D72BBB31D4C9DD30002F6F6 /* Student.m in Sources */ = {isa = PBXBuildFile; fileRef = 5D72BBB01D4C9DD30002F6F6 /* Student.m */; };
 		5D72BBB41D4C9DD30002F6F6 /* Teacher.m in Sources */ = {isa = PBXBuildFile; fileRef = 5D72BBB21D4C9DD30002F6F6 /* Teacher.m */; };
-		5D72BBB61D4C9DF50002F6F6 /* AYQueryTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 5D72BBB51D4C9DF50002F6F6 /* AYQueryTests.m */; };
+		5D72BBB61D4C9DF50002F6F6 /* AYQueryArrayTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 5D72BBB51D4C9DF50002F6F6 /* AYQueryArrayTests.m */; };
 		6003F58E195388D20070C39A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F58D195388D20070C39A /* Foundation.framework */; };
 		6003F590195388D20070C39A /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F58F195388D20070C39A /* CoreGraphics.framework */; };
 		6003F592195388D20070C39A /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F591195388D20070C39A /* UIKit.framework */; };
@@ -26,6 +26,7 @@
 		6003F5BA195388D20070C39A /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 6003F5B8195388D20070C39A /* InfoPlist.strings */; };
 		6BC65033D559D2EB8F1DF9E1 /* Pods_AYQuery_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A2829A24D8DFB525EE9A1448 /* Pods_AYQuery_Example.framework */; };
 		873B8AEB1B1F5CCA007FD442 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 873B8AEA1B1F5CCA007FD442 /* Main.storyboard */; };
+		E7DFA59F1DD4022100B6FC2A /* AYQueryDictionaryTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E7DFA59E1DD4022100B6FC2A /* AYQueryDictionaryTests.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -45,7 +46,7 @@
 		5D72BBB01D4C9DD30002F6F6 /* Student.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Student.m; sourceTree = "<group>"; };
 		5D72BBB11D4C9DD30002F6F6 /* Teacher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Teacher.h; sourceTree = "<group>"; };
 		5D72BBB21D4C9DD30002F6F6 /* Teacher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Teacher.m; sourceTree = "<group>"; };
-		5D72BBB51D4C9DF50002F6F6 /* AYQueryTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AYQueryTests.m; sourceTree = "<group>"; };
+		5D72BBB51D4C9DF50002F6F6 /* AYQueryArrayTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AYQueryArrayTests.m; sourceTree = "<group>"; };
 		6003F58A195388D20070C39A /* AYQuery_Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AYQuery_Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6003F58D195388D20070C39A /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		6003F58F195388D20070C39A /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -73,6 +74,7 @@
 		97C547BC0559687E72634E66 /* Pods_AYQuery_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AYQuery_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A2829A24D8DFB525EE9A1448 /* Pods_AYQuery_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AYQuery_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E6BAD239FE1393C765127C73 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
+		E7DFA59E1DD4022100B6FC2A /* AYQueryDictionaryTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AYQueryDictionaryTests.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -187,9 +189,10 @@
 		6003F5B5195388D20070C39A /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				5D72BBB51D4C9DF50002F6F6 /* AYQueryArrayTests.m */,
+				E7DFA59E1DD4022100B6FC2A /* AYQueryDictionaryTests.m */,
 				5D72BBAE1D4C9DD30002F6F6 /* Model */,
 				6003F5B6195388D20070C39A /* Supporting Files */,
-				5D72BBB51D4C9DF50002F6F6 /* AYQueryTests.m */,
 			);
 			path = Tests;
 			sourceTree = "<group>";
@@ -221,7 +224,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 6003F5BF195388D20070C39A /* Build configuration list for PBXNativeTarget "AYQuery_Example" */;
 			buildPhases = (
-				D59D9388C0D606EBF3B91983 /* 📦 Check Pods Manifest.lock */,
+				D59D9388C0D606EBF3B91983 /* [CP] Check Pods Manifest.lock */,
 				50511F13A5CE6EA8E20B6A7B /* [CP] Check Pods Manifest.lock */,
 				6003F586195388D20070C39A /* Sources */,
 				6003F587195388D20070C39A /* Frameworks */,
@@ -244,7 +247,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 6003F5C2195388D20070C39A /* Build configuration list for PBXNativeTarget "AYQuery_Tests" */;
 			buildPhases = (
-				47AAE6161D0A8BC8A5DC7178 /* 📦 Check Pods Manifest.lock */,
+				47AAE6161D0A8BC8A5DC7178 /* [CP] Check Pods Manifest.lock */,
 				D76EC164B5D1FC9CC117140E /* [CP] Check Pods Manifest.lock */,
 				6003F5AA195388D20070C39A /* Sources */,
 				6003F5AB195388D20070C39A /* Frameworks */,
@@ -271,7 +274,7 @@
 			isa = PBXProject;
 			attributes = {
 				CLASSPREFIX = AY;
-				LastUpgradeCheck = 0720;
+				LastUpgradeCheck = 0810;
 				ORGANIZATIONNAME = "Alan Yeh";
 				TargetAttributes = {
 					6003F5AD195388D20070C39A = {
@@ -366,19 +369,19 @@
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-AYQuery_Tests/Pods-AYQuery_Tests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		47AAE6161D0A8BC8A5DC7178 /* 📦 Check Pods Manifest.lock */ = {
+		47AAE6161D0A8BC8A5DC7178 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "📦 Check Pods Manifest.lock";
+			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 		50511F13A5CE6EA8E20B6A7B /* [CP] Check Pods Manifest.lock */ = {
@@ -471,19 +474,19 @@
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-AYQuery_Example/Pods-AYQuery_Example-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		D59D9388C0D606EBF3B91983 /* 📦 Check Pods Manifest.lock */ = {
+		D59D9388C0D606EBF3B91983 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "📦 Check Pods Manifest.lock";
+			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 		D76EC164B5D1FC9CC117140E /* [CP] Check Pods Manifest.lock */ = {
@@ -520,7 +523,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5D72BBB61D4C9DF50002F6F6 /* AYQueryTests.m in Sources */,
+				E7DFA59F1DD4022100B6FC2A /* AYQueryDictionaryTests.m in Sources */,
+				5D72BBB61D4C9DF50002F6F6 /* AYQueryArrayTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -567,14 +571,19 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
@@ -607,13 +616,18 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
 				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;

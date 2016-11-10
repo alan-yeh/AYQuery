@@ -2,16 +2,14 @@
 //  AYQueryable.m
 //  AYQuery
 //
-//  Created by PoiSon on 16/7/20.
+//  Created by Alan Yeh on 16/7/20.
 //
 //
 
 #import "AYQueryable.h"
-#import "AYTuple.h"
-#import "AYQueryAction.h"
-#import "AYQuerySelectAction.h"
-#import "AYQueryWhereAction.h"
-#import "AYEnumerable.h"
+#import "AYPair.h"
+#import "AYQueryableExtension.h"
+#import <AYRuntime/AYRuntime.h>
 
 /**
  * 具有延迟计算的运算符
@@ -26,8 +24,7 @@
  * SequenceEqual，Single，SingleOrDefault，Sum，ToArray，ToDictionary，ToList，ToLookup
  */
 @interface AYQueryable ()
-@property (nonatomic, retain) NSArray<AYTuple *> *queryable;
-@property (nonatomic, retain) AYQueryAction *action;
+@property (nonatomic, retain) NSArray *queryable;
 @end
 
 @implementation AYQueryable
@@ -35,41 +32,11 @@
     return [[self alloc] initWithDatasource:[NSArray new]];
 }
 
-- (instancetype)initWithDatasource:(NSArray<AYTuple *> *)datasource{
+- (instancetype)initWithDatasource:(NSArray *)datasource{
     if (self = [super init]) {
         self.queryable = datasource;
     }
     return self;
-}
-
-- (AYQueryAction *)action{
-    return _action ?: (_action = [AYQueryAction new]);
-}
-
-- (void)executeAction:(void (^)(AYTuple *tuple, BOOL *stop))action{
-    self.action.nextAction = [AYQueryAction new];
-    
-    NSMutableArray *new_queryable = [NSMutableArray new];
-    
-    for (NSUInteger i = 0, count = self.queryable.count; i < count; i ++) {
-        AYTuple *tuple = self.queryable[i];
-        AYTuple *result = [self.action execute:tuple];
-        if (result == nil) {
-            continue;
-        }
-        [new_queryable addObject:result];
-        
-        BOOL stop = NO;
-        if (action) {
-            action(result, &stop);
-        }
-        if (stop) {
-            break;
-        }
-    }
-    
-    self.queryable = new_queryable;
-    self.action = nil;
 }
 
 #pragma mark - NSFastEnumeration
@@ -81,7 +48,7 @@
     
     if (count > 0) {
         for (NSUInteger i = 0, p = state->state; i < count; i++, p++) {
-            buffer[i] = self.queryable[i].value;
+            buffer[i] = self.queryable[i];
         }
         state->state += count;
     }else{
@@ -91,55 +58,111 @@
     return count;
 }
 
-- (id)objectAtIndexedSubscript:(NSUInteger)idx{
-    return self.queryable[idx];
+- (id)objectAtIndexedSubscript:(NSInteger)idx{
+    if (idx < 0) {
+        return self.queryable[self.queryable.count + idx];
+    }else{
+        return self.queryable[idx];
+    }
 }
 
-- (void)foreach:(void (^)(id, NSUInteger, BOOL *))foreach{
-    __block NSUInteger idx = 0;
-    [self executeAction:^(AYTuple *tuple, BOOL *stop) {
-        foreach(tuple.value, idx ++, stop);
-    }];
+- (void (^)(id))each{
+    return ^(void(^each)(id)){
+        [self.queryable enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            [self _invocak_block:each withArg:obj andReturn:NULL];
+        }];
+    };
 }
+
+- (void (^)(id))reverseEach{
+    return ^(void(^each)(id)){
+        NSEnumerator *reversedEnumerator = self.queryable.reverseObjectEnumerator;
+        id obj;
+        while ((obj = reversedEnumerator.nextObject)) {
+            [self _invocak_block:each withArg:obj andReturn:NULL];
+        }
+    };
+}
+
+- (void)_invocak_block:(id)block withArg:(id)arg andReturn:(void *)returnVal{
+    AYBlockInvocation *block_invocation = [AYBlockInvocation invocationWithBlock:block];
+    
+    NSUInteger arg_count = block_invocation.signature.numberOfArguments;
+    
+    if (arg_count > 1){
+        [block_invocation setArgument:&arg atIndex:1];
+    }
+    
+//warning 这里可能有内存泄漏的BUG
+//    if (![block_invocation argumentsRetained]) {
+//        [block_invocation retainArguments];
+//    }
+    
+    [block_invocation invoke];
+    if (returnVal != NULL) {
+        [block_invocation getReturnValue:returnVal];
+    }
+}
+
 @end
 
 @implementation AYQueryable (Select)
-- (AYQueryable *(^)(BOOL (^)(id)))where{
-    return ^(BOOL (^where)(id)){
-        self.action.nextAction = [AYQueryWhereAction actionWithBlock:where];
-        return self;
+- (AYQueryable *(^)(BOOL (^)(id)))findAll{
+    return ^(BOOL (^findAll)(id)){
+        NSMutableArray *result = [NSMutableArray new];
+        for (id value in self.queryable) {
+            BOOL isSatified = NO;
+            [self _invocak_block:findAll withArg:value andReturn:&isSatified];
+            if (isSatified) {
+                [result addObject:value];
+            }
+        }
+        return result.query;
+    };
+}
+
+- (id (^)(BOOL (^)(id)))find{
+    return ^id (BOOL (^find)(id)){
+        for (id value in self.queryable) {
+            BOOL isSatified = NO;
+            [self _invocak_block:find withArg:value andReturn:&isSatified];
+            if (isSatified) {
+                return value;
+            }
+        }
+        return nil;
     };
 }
 
 - (AYQueryable *(^)(id (^)(id)))select{
     return ^(id (^select)(id)){
-        self.action.nextAction = [AYQuerySelectAction actionWithBlock:select];
-        return self;
+        NSMutableArray *result = [NSMutableArray new];
+        for (id value in self.queryable) {
+            __unsafe_unretained id target;
+            [self _invocak_block:select withArg:value andReturn:&target];
+            [result addObject:target];
+        }
+        return result.query;
     };
 }
 
-- (AYQueryable *(^)(__unsafe_unretained Class))ofType{
-    return ^(Class class){
-        return self.where(^(id e){
-            return [e isKindOfClass:class];
-        });
-    };
-}
 
 - (AYQueryable *(^)(id (^)(id)))groupBy{
     return ^(id (^groupBy)(id)) {
         NSMutableDictionary *group = [NSMutableDictionary new];
-        [self executeAction:^(AYTuple *tuple, BOOL *stop) {
-            id key = groupBy(tuple.value);
-            NSMutableArray *groupArray = group[key];
+        for (id value in self.queryable) {
+            
+            __unsafe_unretained id groupKey;
+            [self _invocak_block:groupBy withArg:value andReturn:&groupKey];
+            
+            NSMutableArray *groupArray = group[groupKey];
             if (groupArray == nil) {
                 groupArray = [NSMutableArray new];
-                group[key] = groupArray;
+                group[groupKey] = groupArray;
             }
-            [groupArray addObject:tuple.value];
-        }];
-        self.queryable = group.query.queryable;
-        return self;
+            [groupArray addObject:value];
+        }
+        return group.query;
     };
 }
 @end
@@ -152,7 +175,7 @@
 - (AYQueryable *(^)(NSUInteger))skip{
     return ^(NSUInteger count){
         __block NSUInteger index = 0;
-        return self.where(^BOOL(id e){
+        return self.findAll(^BOOL(id e){
             return (index ++) >= count;
         });
     };
@@ -161,7 +184,7 @@
 - (AYQueryable *(^)(BOOL (^)(id)))skipWhile{
     return ^(BOOL (^skip)(id)) {
         __block BOOL isSkip = YES;
-        return self.where(^BOOL(id e){
+        return self.findAll(^BOOL(id e){
             return isSkip ? (isSkip = skip(e)) : isSkip;
         });
     };
@@ -170,7 +193,7 @@
 - (AYQueryable *(^)(NSUInteger))take{
     return ^(NSUInteger count){
         __block NSUInteger index = 0;
-        return self.where(^BOOL(id e){
+        return self.findAll(^BOOL(id e){
             return (index ++) < count;
         });
     };
@@ -179,7 +202,7 @@
 - (AYQueryable *(^)(BOOL (^)(id)))takeWhile{
     return ^(BOOL (^take)(id)) {
         __block BOOL isTake = YES;
-        return self.where(^BOOL(id e){
+        return self.findAll(^BOOL(id e){
             return isTake ? (isTake = take(e)) : isTake;
         });
     };
@@ -195,33 +218,28 @@
 @implementation AYQueryable (Operation)
 
 - (id)first{
-    [self executeAction:nil];
-    return self.queryable.firstObject.value;
+    return self.queryable.firstObject;
 }
 
 - (id)last{
-    [self executeAction:nil];
-    return self.queryable.lastObject.value;
+    return self.queryable.lastObject;
 }
 
-- (id (^)(NSUInteger))at{
+- (id (^)(NSUInteger))get{
     return ^(NSUInteger index){
-        [self executeAction:nil];
-        return [self.queryable objectAtIndex:index];
+        return self[index];
     };
 }
 
 - (id (^)(NSComparisonResult (^)(id, id)))max{
     return ^(NSComparisonResult (^cmptr)(id, id)){
-        [self executeAction:nil];
-        self.queryable = [self.queryable sortedArrayUsingComparator:cmptr];
-        return self.queryable.firstObject;
+        NSArray *result = [self.queryable sortedArrayUsingComparator:cmptr];
+        return result.firstObject;
     };
 }
 
 - (id (^)(NSComparisonResult (^)(id, id)))min{
     return ^(NSComparisonResult (^cmptr)(id, id)){
-        [self executeAction:nil];
         self.queryable = [self.queryable sortedArrayUsingComparator:cmptr];
         return self.queryable.lastObject;
     };
@@ -229,67 +247,125 @@
 
 - (BOOL (^)(id))contains{
     return ^(id object) {
-        [self executeAction:nil];
-        return [self.queryable containsObject:AYTupleObject(object)];
+        return [self.queryable containsObject:object];
+    };
+}
+
+- (BOOL (^)(BOOL(^)(id)))any{
+    return ^BOOL(BOOL(^any)(id)){
+        for (id value in self.queryable) {
+            BOOL isSatisfied = NO;
+            [self _invocak_block:any withArg:value andReturn:&isSatisfied];
+            if (isSatisfied) {
+                return YES;
+            }
+        }
+        return NO;
     };
 }
 
 - (AYQueryable *(^)(NSComparisonResult (^)(id, id)))orderBy{
     return ^(NSComparisonResult (^cmptr)(id, id)){
-        [self executeAction:nil];
-        self.queryable = [self.queryable sortedArrayUsingComparator:cmptr];
-        return self;
+        NSArray *result = [self.queryable sortedArrayUsingComparator:cmptr];
+        return result.query;
     };
 }
 
-- (AYQueryable *)distinct{
-    NSMutableOrderedSet *set = [NSMutableOrderedSet orderedSet];
-    [self executeAction:^(AYTuple *tuple, BOOL *stop) {
-        [set addObject:tuple];
-    }];
-    return set.query;
+- (AYQueryable * (^)())distinct{
+    return ^(){
+        NSMutableOrderedSet *result = [NSMutableOrderedSet orderedSetWithArray:self.queryable];
+        return result.query;
+    };
 }
 
-- (AYQueryable *)reverse{
-    [self executeAction:nil];
-    NSEnumerator *reversedEnumerator = self.queryable.reverseObjectEnumerator;
-    NSMutableArray<AYTuple *> *result = [NSMutableArray new];
-    id obj;
-    while ((obj = reversedEnumerator.nextObject)) {
-        [result addObject:obj];
-    }
-    self.queryable = result;
-    return self;
+- (AYQueryable * (^)())reverse{
+    return ^(){
+        NSEnumerator *reversedEnumerator = self.queryable.reverseObjectEnumerator;
+        NSMutableArray *result = [NSMutableArray new];
+        id obj;
+        while ((obj = reversedEnumerator.nextObject)) {
+            [result addObject:obj];
+        }
+        return result.query;
+    };
 }
+
+- (NSString *(^)(NSString *))join{
+    return ^(NSString *seperator){
+        NSMutableString *result = [NSMutableString string];
+        for (id value in self.queryable) {
+            if (result.length > 0) {
+                [result appendString:seperator];
+            }
+            [result appendFormat:@"%@", value];
+        }
+        return result.copy;
+    };
+}
+
+- (AYQueryable *(^)(id<AYQuery>))minus{
+    return ^(id<AYQuery> collection){
+        NSSet *removedMe = collection.query.set();
+        if (removedMe.count < 1) {
+            return self;
+        }
+        
+        NSMutableArray *result = [NSMutableArray new];
+        if (self.queryable > 0 ) {
+            for (id value in self.queryable) {
+                if (![removedMe containsObject:value]) {
+                    [result addObject:value];
+                }
+            }
+        }
+        return result.query;
+    };
+}
+
+- (AYQueryable *(^)(id<AYQuery>))add{
+    return ^(id<AYQuery> collection){
+        if (collection.query.count < 1) {
+            return self.queryable.query;
+        }
+        
+        NSMutableArray *result = self.queryable.mutableCopy;
+        [result addObjectsFromArray:collection.query.array()];
+        return result.query;
+    };
+}
+
 @end
 
 @implementation AYQueryable (Convert)
-- (NSDictionary *(^)(AYTuple *(^)(id)))dictionary{
-    return ^(AYTuple *(^dictionary)(id)) {
+- (NSDictionary *(^)(AYPair *(^)(id)))dictionary{
+    return ^(id (^dictionary)(id)) {
         NSMutableDictionary *result = [NSMutableDictionary new];
-        [self executeAction:^(AYTuple *tuple, BOOL *stop) {
-            AYTuple *key_value = dictionary(tuple);
-            id key = key_value.value[@"Key"];
-            id value = key_value.value[@"Value"];
-            result[key] = value;
-        }];
-        return result;
+        if (dictionary) {
+            for (id value in self.queryable) {
+                AYPair *pair;
+                [self _invocak_block:dictionary withArg:value andReturn:&pair];
+                NSAssert([pair isKindOfClass:[AYPair class]], @"无法转换成dictionary：请返回AYPair类型");
+                [result setObject:pair.value forKey:pair.key];
+            }
+        }else{
+            for (AYPair *pair in self.queryable) {
+                NSAssert([pair isKindOfClass:[AYPair class]], @"无法转换成dictionary：queryable中的元素不是AYPair类型");
+                [result setObject:pair.value forKey:pair.key];
+            }
+        }
+        return result.copy;
     };
 }
 
-- (NSArray *)array{
-    NSMutableArray *result = [NSMutableArray new];
-    [self executeAction:^(AYTuple *tuple, BOOL *stop) {
-        [result addObject:tuple.value];
-    }];
-    return result.copy;
+- (NSArray *(^)())array{
+    return ^(){
+        return self.queryable;
+    };
 }
 
-- (NSSet *)set{
-    NSMutableSet *result = [NSMutableSet new];
-    [self executeAction:^(AYTuple *tuple, BOOL *stop) {
-        [result addObject:tuple.value];
-    }];
-    return result;
+- (NSSet *(^)())set{
+    return ^(){
+        return [NSSet setWithArray:self.queryable];
+    };
 }
 @end

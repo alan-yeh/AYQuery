@@ -2,7 +2,7 @@
 //  Teacher.m
 //  UnitCase
 //
-//  Created by PoiSon on 15/10/10.
+//  Created by Alan Yeh on 15/10/10.
 //  Copyright © 2015年 yerl. All rights reserved.
 //
 

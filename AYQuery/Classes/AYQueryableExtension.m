@@ -2,13 +2,13 @@
 //  AYEnumerable.m
 //  AYQuery
 //
-//  Created by PoiSon on 16/7/30.
+//  Created by Alan Yeh on 16/7/30.
 //
 //
 
-#import "AYEnumerable.h"
+#import "AYQueryableExtension.h"
 #import "AYQueryable.h"
-#import "AYTuple.h"
+#import "AYPair.h"
 
 AYQueryable *AYQueryMake(id<AYQuery> query){
     return query.query ?: [AYQueryable nilQuery];
@@ -18,7 +18,7 @@ AYQueryable *AYQueryMake(id<AYQuery> query){
 - (AYQueryable *)query{
     NSMutableArray *datasource = [NSMutableArray new];
     for (id value in self) {
-        [datasource addObject:AYTupleArray(value)];
+        [datasource addObject:value];
     }
     return [[AYQueryable alloc] initWithDatasource:datasource];
 }
@@ -28,7 +28,7 @@ AYQueryable *AYQueryMake(id<AYQuery> query){
 - (AYQueryable *)query{
     NSMutableArray *datasource = [NSMutableArray new];
     for (id key in self) {
-        [datasource addObject:AYTupleObject(Key = key, Value = self[key])];
+        [datasource addObject:[AYPair key:key value:self[key]]];
     }
     return [[AYQueryable alloc] initWithDatasource:datasource];
 }
@@ -38,7 +38,7 @@ AYQueryable *AYQueryMake(id<AYQuery> query){
 - (AYQueryable *)query{
     NSMutableArray *datasource = [NSMutableArray new];
     for (id value in self) {
-        [datasource addObject:AYTupleArray(value)];
+        [datasource addObject:value];
     }
     return [[AYQueryable alloc] initWithDatasource:datasource];
 }
@@ -48,7 +48,7 @@ AYQueryable *AYQueryMake(id<AYQuery> query){
 - (AYQueryable *)query{
     NSMutableArray *datasource = [NSMutableArray new];
     for (id value in self) {
-        [datasource addObject:AYTupleArray(value)];
+        [datasource addObject:value];
     }
     return [[AYQueryable alloc] initWithDatasource:datasource];
 }
@@ -58,7 +58,7 @@ AYQueryable *AYQueryMake(id<AYQuery> query){
 - (AYQueryable *)query{
     NSMutableArray *datasource = [NSMutableArray new];
     for (id value in self) {
-        [datasource addObject:AYTupleArray(value)];
+        [datasource addObject:value];
     }
     return [[AYQueryable alloc] initWithDatasource:datasource];
 }
@@ -68,8 +68,14 @@ AYQueryable *AYQueryMake(id<AYQuery> query){
 - (AYQueryable *)query{
     NSMutableArray *datasource = [NSMutableArray new];
     for (id key in self) {
-        [datasource addObject:AYTupleObject(Key = key, Value = [self objectForKey:key])];
+        [datasource addObject:[AYPair key:key value:[self objectForKey:key]]];
     }
     return [[AYQueryable alloc] initWithDatasource:datasource];
+}
+@end
+
+@implementation AYQueryable (AYQuery)
+- (AYQueryable *)query{
+    return self;
 }
 @end

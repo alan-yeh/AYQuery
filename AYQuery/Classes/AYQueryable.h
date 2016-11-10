@@ -2,60 +2,70 @@
 //  AYQueryable.h
 //  AYQuery
 //
-//  Created by PoiSon on 16/7/20.
+//  Created by Alan Yeh on 16/7/20.
 //
 //
 
 #import <Foundation/Foundation.h>
 
-@class AYTuple;
+NS_ASSUME_NONNULL_BEGIN
+@protocol AYQuery;
+@class AYPair;
 
 @interface AYQueryable : NSObject<NSFastEnumeration>
 + (instancetype)nilQuery;
 - (instancetype)init __attribute__((unavailable("不允许直接实例化")));
 + (instancetype)new __attribute__((unavailable("不允许直接实例化")));
 
-- (instancetype)initWithDatasource:(NSArray<AYTuple *> *)datasource;
+- (instancetype)initWithDatasource:(NSArray *)datasource;
 
-- (id)objectAtIndexedSubscript:(NSUInteger)idx;
-- (void)foreach:(void (^)(id e, NSUInteger idx, BOOL *stop))foreach;
+/** 如果是负数，则返回倒数元素，如query[-1]就是列表最后一个元素 */
+- (id)objectAtIndexedSubscript:(NSInteger)idx;
+@property (readonly) void(^each)(id);/**< 遍历 */
+@property (readonly) void(^reverseEach)(id);/**< 反向遍历 */
 @end
 
 // 筛选与投影
 @interface AYQueryable (Select)
-@property (readonly) AYQueryable *(^where)(BOOL(^)(id));
-@property (readonly) AYQueryable *(^select)(id(^)(id));
-@property (readonly) AYQueryable *(^ofType)(Class);
-@property (readonly) AYQueryable *(^groupBy)(id(^)(id));
+@property (readonly) AYQueryable *(^findAll)(BOOL(^)(id));/**< 查找满足条件的所有元素 */
+@property (readonly) id (^find)(BOOL(^)(id));/**< 查找满足条件的第一个元素 */
+@property (readonly) AYQueryable *(^select)(id(^)(id));/**< 在每一个元素上执行操作并返回一个结果集 */
+@property (readonly) AYQueryable *(^groupBy)(id(^)(id));/**< 按条件分组 */
 @end
 
 // 元素分区
 @interface AYQueryable (Range)
 @property (readonly) NSUInteger count;
-@property (readonly) AYQueryable *(^skip)(NSUInteger);
-@property (readonly) AYQueryable *(^skipWhile)(BOOL(^)(id));
-@property (readonly) AYQueryable *(^take)(NSUInteger);
-@property (readonly) AYQueryable *(^takeWhile)(BOOL(^)(id));
-@property (readonly) AYQueryable *(^rangeOf)(NSUInteger, NSUInteger);
+@property (readonly) AYQueryable *(^skip)(NSUInteger);/**< 跳过N个item */
+@property (readonly) AYQueryable *(^skipWhile)(BOOL(^)(id));/**< 跳过item，直至满足条件 */
+@property (readonly) AYQueryable *(^take)(NSUInteger);/**< 取N个item */
+@property (readonly) AYQueryable *(^takeWhile)(BOOL(^)(id));/**< 取N个item，直至满足条件 */
+@property (readonly) AYQueryable *(^rangeOf)(NSUInteger, NSUInteger);/**< 取范围内的item */
 @end
 
 // 元素操作
 @interface AYQueryable (Operation)
-@property (readonly) id first;
-@property (readonly) id last;
-@property (readonly) id (^at)(NSUInteger);
-@property (readonly) id (^max)(NSComparisonResult(^)(id, id));
-@property (readonly) id (^min)(NSComparisonResult(^)(id, id));
-@property (readonly) BOOL (^contains)(id);
-@property (readonly) AYQueryable *(^orderBy)(NSComparisonResult(^)(id, id));
-@property (readonly) AYQueryable *distinct;
-@property (readonly) AYQueryable *reverse;
+@property (readonly) id first;/**< 第一个item */
+@property (readonly) id last;/**< 最后一个item */
+@property (readonly) id (^get)(NSUInteger);/**< 取第N个item，如果N为负数，则从后开始取值 */
+@property (readonly) id (^max)(NSComparisonResult(^)(id, id));/**< 取最大值 */
+@property (readonly) id (^min)(NSComparisonResult(^)(id, id));/**< 去最小值 */
+@property (readonly) BOOL (^contains)(id);/**< 是否包含某个item，使用isEquals来判断 */
+@property (readonly) BOOL (^any)(BOOL(^)(id));/**< 判断是否有item满足条件 */
+@property (readonly) AYQueryable *(^orderBy)(NSComparisonResult(^)(id, id));/**< 排序 */
+@property (readonly) AYQueryable *(^distinct)();/**< 去重 */
+@property (readonly) AYQueryable *(^reverse)();/**< 反序 */
+@property (readonly) NSString *(^join)(NSString *seperator);/**< 将所有item连接起来 */
+@property (readonly) AYQueryable *(^minus)(id<AYQuery>);/**< 移除item */
+@property (readonly) AYQueryable *(^add)(id<AYQuery>);/**< 添加item */
 @end
 
 @class AYTuple;
 // 转化为NSDictionary、NSArray、NSSet
 @interface AYQueryable (Convert)
-@property (readonly) NSDictionary *(^dictionary)(AYTuple *(^)(id));
-@property (readonly) NSArray *array;
-@property (readonly) NSSet *set;
+@property (readonly) NSDictionary *(^dictionary)(AYPair *(^_Nullable)(id));/**< 转换成dictionary */
+@property (readonly) NSArray *(^array)();/**< 转换成array */
+@property (readonly) NSSet *(^set)();/**< 转换成set */
 @end
+
+NS_ASSUME_NONNULL_END
