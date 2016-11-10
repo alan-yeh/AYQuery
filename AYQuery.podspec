@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'AYQuery'
-  s.version          = '2.0.0'
+  s.version          = '2.0.1'
   s.summary          = 'Library for collection query.'
 
   s.homepage         = 'https://github.com/alan-yeh/AYQuery'
