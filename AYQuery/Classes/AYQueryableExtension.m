@@ -12,11 +12,7 @@
 
 @implementation NSArray (AYQuery)
 - (AYQueryable *)query{
-    NSMutableArray *datasource = [NSMutableArray new];
-    for (id value in self) {
-        [datasource addObject:value];
-    }
-    return [[AYQueryable alloc] initWithDatasource:datasource];
+    return [[AYQueryable alloc] initWithDatasource:self];
 }
 @end
 
@@ -72,6 +68,6 @@
 
 @implementation AYQueryable (AYQuery)
 - (AYQueryable *)query{
-    return self;
+    return [[AYQueryable alloc] initWithDatasource:self.toArray()];
 }
 @end

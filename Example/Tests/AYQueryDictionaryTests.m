@@ -38,14 +38,14 @@
 }
 
 - (void)testFind{
-    NSArray *array = self.data.query.array();
+    NSArray *array = self.data.query.toArray();
     for (AYPair *pair in array) {
         XCTAssert([pair isKindOfClass:[AYPair class]]);
     }
     
     NSArray *sunStu = self.data.query.findAll(^BOOL(AYPair *item){
         return [item.key hasPrefix:@"孙"];
-    }).array();
+    }).toArray();
     
     XCTAssert(sunStu.count == 142);
     
@@ -59,7 +59,7 @@
 - (void)testSelect{
     NSArray *names = self.data.query.select(^(AYPair *item){
         return item.key;
-    }).array();
+    }).toArray();
     
     XCTAssert(names.count == self.data.count);
     for (NSString *name in names) {
@@ -70,27 +70,27 @@
 - (void)testGroupBy{
     NSArray *groups = self.data.query.groupBy(^(AYPair *item){
         return [item.key substringWithRange:NSMakeRange(0, 1)];
-    }).array();
+    }).toArray();
     XCTAssert(groups.count == 4);
     
     NSSet *groupKeys = groups.query.select(^(AYPair *group){
         return group.key;
-    }).set();
+    }).toSet();
     BOOL isEquals = [groupKeys isEqualToSet:[NSSet setWithObjects:@"张", @"王", @"吴", @"孙", nil]];
     XCTAssert(isEquals);
 }
 
 - (void)testRange{
     //跳过3个item
-    NSArray *skips = self.data.query.skip(3).array();
+    NSArray *skips = self.data.query.skip(3).toArray();
     XCTAssert(skips.count == self.data.count - 3);
     
     //取10个item
-    NSArray *takes = self.data.query.take(10).array();
+    NSArray *takes = self.data.query.take(10).toArray();
     XCTAssert(takes.count == 10);
     
     //取范围
-    NSArray *ranges = self.data.query.rangeOf(3, 3).array();
+    NSArray *ranges = self.data.query.rangeOf(3, 3).toArray();
     XCTAssert(ranges.count == 3);
 }
 

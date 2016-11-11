@@ -29,6 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (readonly) AYQueryable *(^findAll)(BOOL(^)(id));/**< 查找满足条件的所有元素 */
 @property (readonly) _Nullable id (^find)(BOOL(^)(id));/**< 查找满足条件的第一个元素 */
 @property (readonly) AYQueryable *(^select)(id(^)(id));/**< 在每一个元素上执行操作并返回一个结果集 */
+@property (readonly) AYQueryable *(^selectMany)(id(^)(id));/**< 在每一个元素上执行操作并返回一个结果集, 并结果集扁平化（相当于在select().faltten()） */
 @property (readonly) AYQueryable *(^groupBy)(id(^)(id));/**< 按条件分组 */
 @end
 
@@ -44,29 +45,33 @@ NS_ASSUME_NONNULL_BEGIN
 
 // 元素操作
 @interface AYQueryable (Operation)
-@property (readonly) _Nullable id first;/**< 第一个item，如果query没有item则返回nil */
-@property (readonly) _Nullable id last;/**< 最后一个item，如果query没有item则返回nil */
+@property (readonly) _Nullable id (^first)();/**< 第一个item，如果query没有item则返回nil */
+@property (readonly) id (^firstOrDefault)(id);/**< 第一个item，如果query没有item则返回default */
+@property (readonly) _Nullable id (^last)();/**< 最后一个item，如果query没有item则返回nil */
+@property (readonly) id (^lastOrDefault)(id);/**< 最后一个item，如果query没有item则返回default */
 @property (readonly) _Nullable id (^get)(NSUInteger);/**< 取第N个item，如果N为负数，则从后开始取值，如果超界了，则返回nil */
+@property (readonly) id (^getOrDefault)(NSUInteger, id);/**< 取第N个item，如果N为负数，则从后开始取值，如果nil，则返回default */
 @property (readonly) _Nullable id (^max)(NSComparisonResult(^)(id, id));/**< 取最大值 */
 @property (readonly) _Nullable id (^min)(NSComparisonResult(^)(id, id));/**< 去最小值 */
 @property (readonly) BOOL (^contains)(id);/**< 是否包含某个item，使用isEquals来判断 */
 @property (readonly) BOOL (^any)(BOOL(^)(id));/**< 判断是否有item满足条件 */
+@property (readonly) BOOL (^all)(BOOL(^)(id));/**< 判断是所有item满足条件 */
 @property (readonly) AYQueryable *(^orderBy)(NSComparisonResult(^)(id, id));/**< 排序 */
 @property (readonly) AYQueryable *(^distinct)();/**< 去重 */
 @property (readonly) AYQueryable *(^reverse)();/**< 反序 */
 @property (readonly) AYQueryable *(^flatten)();/**< 扁平化 */
 @property (readonly) NSString *(^join)(NSString *seperator);/**< 将所有item连接起来 */
-@property (readonly) AYQueryable *(^minus)(id<AYQuery>);/**< 移除item */
-@property (readonly) AYQueryable *(^add)(id);/**< 添加item */
-@property (readonly) AYQueryable *(^addAll)(id<AYQuery>);/**< 添加item */
+@property (readonly) AYQueryable *(^except)(id<AYQuery>);/**< 移除两个集合的交集 */
+@property (readonly) AYQueryable *(^intersect)(id<AYQuery>);/**< 两个集合的交集 */
+@property (readonly) AYQueryable *(^unionAll)(id<AYQuery>);/**< 合并两个集合 */
 @end
 
 @class AYTuple;
 // 转化为NSDictionary、NSArray、NSSet
 @interface AYQueryable (Convert)
-@property (readonly) NSDictionary *(^dictionary)(AYPair *(^_Nullable)(id));/**< 转换成dictionary */
-@property (readonly) NSArray *(^array)();/**< 转换成array */
-@property (readonly) NSSet *(^set)();/**< 转换成set */
+@property (readonly) NSDictionary *(^toDictionary)(AYPair *(^_Nullable)(id));/**< 转换成dictionary */
+@property (readonly) NSArray *(^toArray)();/**< 转换成array */
+@property (readonly) NSSet *(^toSet)();/**< 转换成set */
 @end
 
 NS_ASSUME_NONNULL_END

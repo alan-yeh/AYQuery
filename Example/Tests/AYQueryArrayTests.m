@@ -55,14 +55,14 @@
 
 - (void)testOptional{
     NSArray *array = nil;
-    NSSet *set = AYOptional(NSArray, array).query.set();
+    NSSet *set = AYOptional(NSArray, array).query.toSet();
     XCTAssert(set != nil && set.count < 1 && [set isKindOfClass:[NSSet class]]);
 }
 
 - (void)testFind{
     NSArray *sunStu = self.data.query.findAll(^BOOL(Student *stu){
         return [stu.name hasPrefix:@"孙"];
-    }).array();
+    }).toArray();
     
     XCTAssert(sunStu.count == 142);
     
@@ -83,7 +83,7 @@
 - (void)testSelect{
     NSArray *names = self.data.query.select(^(Student *stu){
         return stu.name;
-    }).array();
+    }).toArray();
     
     XCTAssert(names.count == self.data.count);
     
@@ -96,13 +96,13 @@
 - (void)testGroupBy{
     NSArray *groups = self.data.query.groupBy(^(Student *stu){
         return [stu.name substringWithRange:NSMakeRange(0, 1)];
-    }).array();
+    }).toArray();
     
     XCTAssert(groups.count == 4);
     
     NSSet *groupKeys = groups.query.select(^(AYPair *group){
         return group.key;
-    }).set();
+    }).toSet();
     
     BOOL isEquals = [groupKeys isEqualToSet:[NSSet setWithObjects:@"张", @"王", @"吴", @"孙", nil]];
     XCTAssert(isEquals);
@@ -110,16 +110,16 @@
 
 - (void)testRange{
     //跳过3个item
-    NSArray *skips = self.data.query.skip(3).array();
+    NSArray *skips = self.data.query.skip(3).toArray();
     XCTAssert([[skips[0] name] isEqualToString:[self.data[3] name]]);
     XCTAssert(skips.count == self.data.count - 3);
     
     //取10个item
-    NSArray *takes = self.data.query.take(10).array();
+    NSArray *takes = self.data.query.take(10).toArray();
     XCTAssert(takes.count == 10);
     
     //取范围
-    NSArray *ranges = self.data.query.rangeOf(3, 3).array();
+    NSArray *ranges = self.data.query.rangeOf(3, 3).toArray();
     XCTAssert(ranges.count == 3);
 }
 
@@ -142,10 +142,10 @@
 - (void)testOperation{
     NSArray *data = @[@1, @3, @9, @0, @9, @-4, @55];
     
-    id first = data.query.first;
+    id first = data.query.first();
     XCTAssert([first isEqual:@1]);
     
-    id last = data.query.last;
+    id last = data.query.last();
     XCTAssert([last isEqual:@55]);
     
     id get_first = data.query.get(0);
@@ -182,14 +182,14 @@
     
     NSArray *orderedArray = data.query.orderBy(^(id item1, id item2){
         return [item1 compare:item2];
-    }).array();
+    }).toArray();
     BOOL isOrdered = [orderedArray isEqualToArray:@[@-4, @0, @1, @3, @9, @9, @55]];
     XCTAssert(isOrdered);
     
-    NSArray *distincedArray = data.query.distinct().array();
+    NSArray *distincedArray = data.query.distinct().toArray();
     XCTAssert(distincedArray.count == 6);
     
-    NSArray *reversedArray = data.query.reverse().array();
+    NSArray *reversedArray = data.query.reverse().toArray();
     isOrdered = [reversedArray isEqualToArray:@[@55, @-4, @9, @0, @9, @3, @1]];
     XCTAssert(isOrdered);
     
@@ -197,19 +197,15 @@
     BOOL isEquals = [@"1+3+9+0+9+-4+55" isEqualToString:joinString];
     XCTAssert(isEquals);
     
-    NSArray *minusedArray = data.query.minus(@[@55, @0, @3]).array();
+    NSArray *minusedArray = data.query.except(@[@55, @0, @3]).toArray();
     isEquals = [minusedArray isEqualToArray:@[@1, @9, @9, @-4]];
     XCTAssert(isEquals);
     
-    NSArray *addedArray = data.query.addAll(@[@920, @658]).array();
+    NSArray *addedArray = data.query.unionAll(@[@920, @658]).toArray();
     isEquals = [addedArray isEqualToArray:@[@1, @3, @9, @0, @9, @-4, @55, @920, @658]];
     XCTAssert(isEquals);
     
-    addedArray = data.query.add(@92).array();
-    isEquals = [addedArray isEqualToArray:@[@1, @3, @9, @0, @9, @-4, @55, @92]];
-    XCTAssert(isEquals);
-    
-    NSArray *flattenArray = [NSMutableArray arrayWithObjects:@1, @5, @8, @[@2, @6], @{@"3": @3, @"4": @4}, nil].query.flatten().array();
+    NSArray *flattenArray = [NSMutableArray arrayWithObjects:@1, @5, @8, @[@2, @6], @{@"3": @3, @"4": @4}, nil].query.flatten().toArray();
     isEquals = [flattenArray isEqualToArray:@[@1, @5, @8, @2, @6, AYPairMake(@"3", @3), AYPairMake(@"4", @4)]];
     XCTAssert(isEquals);
 }
@@ -217,7 +213,7 @@
 - (void)testConvert{
     NSDictionary *dic = self.data.query.groupBy(^(Student *stu){
         return [stu.name substringToIndex:1];
-    }).dictionary(nil);
+    }).toDictionary(nil);
     
     XCTAssert([dic isKindOfClass:[NSDictionary class]]);
     BOOL isEquals = [[NSSet setWithArray:[dic allKeys]] isEqualToSet:[NSSet setWithObjects:@"张", @"王", @"吴", @"孙", nil]];
@@ -227,7 +223,7 @@
         return [stu.name substringToIndex:1];
     }).select(^(id item){
         return [item key];
-    }).array();
+    }).toArray();
     XCTAssert([array isKindOfClass:[NSArray class]]);
     isEquals = [[NSSet setWithArray:array] isEqualToSet:[NSSet setWithObjects:@"张", @"王", @"吴", @"孙", nil]];
     XCTAssert(isEquals);
@@ -236,7 +232,7 @@
         return [stu.name substringToIndex:1];
     }).select(^(id item){
         return [item key];
-    }).set();
+    }).toSet();
     XCTAssert([set isKindOfClass:[NSSet class]]);
     isEquals = [set isEqualToSet:[NSSet setWithObjects:@"张", @"王", @"吴", @"孙", nil]];
     XCTAssert(isEquals);

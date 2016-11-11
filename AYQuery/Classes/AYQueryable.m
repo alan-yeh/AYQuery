@@ -11,18 +11,6 @@
 #import "AYQueryableExtension.h"
 #import <AYRuntime/AYRuntime.h>
 
-/**
- * 具有延迟计算的运算符
- * Cast，Concat，DefaultIfEmpty，Distinct，Except，GroupBy，GroupJoin，Intersect，
- * Join，OfType，OrderBy，OrderByDescending，Repeat，Reverse，Select，SelectMany，Skip，
- * SkipWhile，Take，TakeWhile，ThenBy，ThenByDescending，Union，Where，Zip
- *
- *
- * 立即执行的运算符
- * Aggregate，All，Any，Average，Contains，Count，ElementAt，ElementAtOrDefault，
- * Empty，First，FirstOrDefault，Last，LastOrDefault，LongCount，Max，Min，Range，
- * SequenceEqual，Single，SingleOrDefault，Sum，ToArray，ToDictionary，ToList，ToLookup
- */
 @interface AYQueryable ()
 @property (nonatomic, retain) NSArray *queryable;
 @end
@@ -30,8 +18,9 @@
 @implementation AYQueryable
 
 - (instancetype)initWithDatasource:(NSArray *)datasource{
+    NSParameterAssert([datasource isKindOfClass:[NSArray class]]);
     if (self = [super init]) {
-        self.queryable = datasource;
+        self.queryable = [datasource copy];
     }
     return self;
 }
@@ -151,6 +140,21 @@
     };
 }
 
+- (AYQueryable *(^)(id (^)(id)))selectMany{
+    return ^(id (^selectMany)(id)){
+        NSMutableArray *result = [NSMutableArray new];
+        for (id value in self.queryable) {
+            __unsafe_unretained id<AYQuery> target;
+            [self _invocak_block:selectMany withArg:value andReturn:&target];
+            if ([target conformsToProtocol:@protocol(AYQuery)]) {
+                [result addObjectsFromArray:target.query.queryable];
+            }else{
+                [result addObject:target];
+            }
+        }
+        return result.query;
+    };
+}
 
 - (AYQueryable *(^)(id (^)(id)))groupBy{
     return ^(id (^groupBy)(id)) {
@@ -222,17 +226,39 @@
 
 @implementation AYQueryable (Operation)
 
-- (id)first{
-    return self[0];
+- (id (^)())first{
+    return ^(){
+        return self[0];
+    };
 }
 
-- (id)last{
-    return self[-1];
+- (id (^)(id))firstOrDefault{
+    return ^(id defaultValue){
+        return self[0] ?: defaultValue;
+    };
+}
+
+- (id (^)())last{
+    return ^(){
+        return self[-1];
+    };
+}
+
+- (id (^)(id))lastOrDefault{
+    return ^(id defaultValue){
+        return self[-1] ?: defaultValue;
+    };
 }
 
 - (id (^)(NSUInteger))get{
     return ^(NSUInteger index){
         return self[index];
+    };
+}
+
+- (id  _Nonnull (^)(NSUInteger, id _Nonnull))getOrDefault{
+    return ^(NSUInteger index, id defaultValue){
+        return self[index] ?: defaultValue;
     };
 }
 
@@ -275,6 +301,22 @@
             }
         }
         return NO;
+    };
+}
+
+- (BOOL (^)(BOOL (^)(id)))all{
+    return ^BOOL(BOOL (^all)(id)){
+        if (self.queryable.count < 1) {
+            return YES;
+        }
+        for (id value in self.queryable) {
+            BOOL isSatisfied = NO;
+            [self _invocak_block:all withArg:value andReturn:&isSatisfied];
+            if (!isSatisfied) {
+                return NO;
+            }
+        }
+        return YES;
     };
 }
 
@@ -333,9 +375,9 @@
     };
 }
 
-- (AYQueryable *(^)(id<AYQuery>))minus{
+- (AYQueryable *(^)(id<AYQuery>))except{
     return ^(id<AYQuery> collection){
-        NSSet *removedMe = collection.query.set();
+        NSSet *removedMe = collection.query.toSet();
         if (removedMe.count < 1) {
             return self;
         }
@@ -352,26 +394,36 @@
     };
 }
 
-- (AYQueryable *(^)(id))add{
-    return ^(id item){
-        if (item == nil) {
-            return self.queryable.query;
+- (AYQueryable * (^)(id<AYQuery>))intersect{
+    return ^(id<AYQuery> collection){
+        AYQueryable *query = collection.query;
+        if (self.queryable.count < 1 || query.count < 1) {
+            return @[].query;
         }
         
-        NSMutableArray *result = self.queryable.mutableCopy;
-        [result addObject:item];
+        NSMutableSet *result = [NSMutableSet set];
+        
+        NSSet *self_data = self.toSet();
+        NSSet *collection_set = query.toSet();
+        
+        for (id value in self_data) {
+            if ([collection_set containsObject:value]) {
+                [result addObject:value];
+            }
+        }
+        
         return result.query;
     };
 }
 
-- (AYQueryable *(^)(id<AYQuery>))addAll{
+- (AYQueryable *(^)(id<AYQuery>))unionAll{
     return ^(id<AYQuery> collection){
         if (collection.query.count < 1) {
             return self.queryable.query;
         }
         
         NSMutableArray *result = self.queryable.mutableCopy;
-        [result addObjectsFromArray:collection.query.array()];
+        [result addObjectsFromArray:collection.query.toArray()];
         return result.query;
     };
 }
@@ -379,7 +431,7 @@
 @end
 
 @implementation AYQueryable (Convert)
-- (NSDictionary *(^)(AYPair *(^)(id)))dictionary{
+- (NSDictionary *(^)(AYPair *(^)(id)))toDictionary{
     return ^(id (^dictionary)(id)) {
         NSMutableDictionary *result = [NSMutableDictionary new];
         if (dictionary) {
@@ -399,13 +451,13 @@
     };
 }
 
-- (NSArray *(^)())array{
+- (NSArray *(^)())toArray{
     return ^(){
         return self.queryable;
     };
 }
 
-- (NSSet *(^)())set{
+- (NSSet *(^)())toSet{
     return ^(){
         return [NSSet setWithArray:self.queryable];
     };
