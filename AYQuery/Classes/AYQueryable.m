@@ -25,7 +25,6 @@
     return self;
 }
 
-#pragma mark - NSFastEnumeration
 - (NSUInteger)countByEnumeratingWithState:(NSFastEnumerationState *)state objects:(__unsafe_unretained id  _Nonnull *)buffer count:(NSUInteger)len{
     state->mutationsPtr = (unsigned long *)&state->mutationsPtr;
     
@@ -100,7 +99,20 @@
 
 @end
 
-@implementation AYQueryable (Select)
+@implementation AYQueryable (Filter)
+- (id (^)(BOOL (^)(id)))find{
+    return ^id (BOOL (^find)(id)){
+        for (id value in self.queryable) {
+            BOOL isSatified = NO;
+            [self _invocak_block:find withArg:value andReturn:&isSatified];
+            if (isSatified) {
+                return value;
+            }
+        }
+        return nil;
+    };
+}
+
 - (AYQueryable *(^)(BOOL (^)(id)))findAll{
     return ^(BOOL (^findAll)(id)){
         NSMutableArray *result = [NSMutableArray new];
@@ -115,16 +127,52 @@
     };
 }
 
-- (id (^)(BOOL (^)(id)))find{
-    return ^id (BOOL (^find)(id)){
-        for (id value in self.queryable) {
-            BOOL isSatified = NO;
-            [self _invocak_block:find withArg:value andReturn:&isSatified];
-            if (isSatified) {
-                return value;
+- (AYQueryable * (^)(Class))ofType{
+    return ^(Class class){
+        return self.findAll(^(id item){
+            return [item isKindOfClass:class];
+        });
+    };
+}
+
+- (AYQueryable *(^)(id<AYQuery>))except{
+    return ^(id<AYQuery> collection){
+        NSSet *removedMe = collection.query.toSet();
+        if (removedMe.count < 1) {
+            return self;
+        }
+        
+        NSMutableArray *result = [NSMutableArray new];
+        if (self.queryable > 0 ) {
+            for (id value in self.queryable) {
+                if (![removedMe containsObject:value]) {
+                    [result addObject:value];
+                }
             }
         }
-        return nil;
+        return result.query;
+    };
+}
+
+- (AYQueryable * (^)(id<AYQuery>))intersect{
+    return ^(id<AYQuery> collection){
+        AYQueryable *query = collection.query;
+        if (self.queryable.count < 1 || query.count < 1) {
+            return @[].query;
+        }
+        
+        NSMutableSet *result = [NSMutableSet set];
+        
+        NSSet *self_data = self.toSet();
+        NSSet *collection_set = query.toSet();
+        
+        for (id value in self_data) {
+            if ([collection_set containsObject:value]) {
+                [result addObject:value];
+            }
+        }
+        
+        return result.query;
     };
 }
 
@@ -222,6 +270,61 @@
         return self.skip(skip).take(take);
     };
 }
+
+- (AYQueryable * (^)())distinct{
+    return ^(){
+        NSMutableOrderedSet *result = [NSMutableOrderedSet orderedSetWithArray:self.queryable];
+        return result.query;
+    };
+}
+
+- (AYQueryable *(^)(NSComparisonResult (^)(id, id)))orderBy{
+    return ^(NSComparisonResult (^cmptr)(id, id)){
+        NSArray *result = [self.queryable sortedArrayUsingComparator:cmptr];
+        return result.query;
+    };
+}
+
+- (AYQueryable * (^)())reverse{
+    return ^(){
+        NSEnumerator *reversedEnumerator = self.queryable.reverseObjectEnumerator;
+        NSMutableArray *result = [NSMutableArray new];
+        id obj;
+        while ((obj = reversedEnumerator.nextObject)) {
+            [result addObject:obj];
+        }
+        return result.query;
+    };
+}
+
+- (AYQueryable *(^)())flatten{
+    return ^(){
+        NSMutableArray *result = [NSMutableArray new];
+        
+        for (id<AYQuery> value in self.queryable) {
+            if ([value conformsToProtocol:@protocol(AYQuery)]) {
+                [result addObjectsFromArray:value.query.queryable];
+            }else{
+                [result addObject:value];
+            }
+        }
+        
+        return result.query;
+    };
+}
+
+- (AYQueryable *(^)(id<AYQuery>))unionAll{
+    return ^(id<AYQuery> collection){
+        if (collection.query.count < 1) {
+            return self.queryable.query;
+        }
+        
+        NSMutableArray *result = self.queryable.mutableCopy;
+        [result addObjectsFromArray:collection.query.toArray()];
+        return result.query;
+    };
+}
+
 @end
 
 @implementation AYQueryable (Operation)
@@ -320,55 +423,6 @@
     };
 }
 
-- (AYQueryable *(^)(NSComparisonResult (^)(id, id)))orderBy{
-    return ^(NSComparisonResult (^cmptr)(id, id)){
-        NSArray *result = [self.queryable sortedArrayUsingComparator:cmptr];
-        return result.query;
-    };
-}
-
-- (AYQueryable * (^)())distinct{
-    return ^(){
-        NSMutableOrderedSet *result = [NSMutableOrderedSet orderedSetWithArray:self.queryable];
-        return result.query;
-    };
-}
-
-- (AYQueryable * (^)())reverse{
-    return ^(){
-        NSEnumerator *reversedEnumerator = self.queryable.reverseObjectEnumerator;
-        NSMutableArray *result = [NSMutableArray new];
-        id obj;
-        while ((obj = reversedEnumerator.nextObject)) {
-            [result addObject:obj];
-        }
-        return result.query;
-    };
-}
-
-- (AYQueryable *(^)())flatten{
-    return ^(){
-        NSMutableArray *result = [NSMutableArray new];
-        
-        for (id<AYQuery> value in self.queryable) {
-            if ([value conformsToProtocol:@protocol(AYQuery)]) {
-                [result addObjectsFromArray:value.query.queryable];
-            }else{
-                [result addObject:value];
-            }
-        }
-        
-        return result.query;
-    };
-}
-
-- (AYQueryable * (^)(Class))ofType{
-    return ^(Class class){
-        return self.findAll(^(id item){
-            return [item isKindOfClass:class];
-        });
-    };
-}
 
 - (NSString *(^)(NSString *))join{
     return ^(NSString *seperator){
@@ -380,59 +434,6 @@
             [result appendFormat:@"%@", value];
         }
         return result.copy;
-    };
-}
-
-- (AYQueryable *(^)(id<AYQuery>))except{
-    return ^(id<AYQuery> collection){
-        NSSet *removedMe = collection.query.toSet();
-        if (removedMe.count < 1) {
-            return self;
-        }
-        
-        NSMutableArray *result = [NSMutableArray new];
-        if (self.queryable > 0 ) {
-            for (id value in self.queryable) {
-                if (![removedMe containsObject:value]) {
-                    [result addObject:value];
-                }
-            }
-        }
-        return result.query;
-    };
-}
-
-- (AYQueryable * (^)(id<AYQuery>))intersect{
-    return ^(id<AYQuery> collection){
-        AYQueryable *query = collection.query;
-        if (self.queryable.count < 1 || query.count < 1) {
-            return @[].query;
-        }
-        
-        NSMutableSet *result = [NSMutableSet set];
-        
-        NSSet *self_data = self.toSet();
-        NSSet *collection_set = query.toSet();
-        
-        for (id value in self_data) {
-            if ([collection_set containsObject:value]) {
-                [result addObject:value];
-            }
-        }
-        
-        return result.query;
-    };
-}
-
-- (AYQueryable *(^)(id<AYQuery>))unionAll{
-    return ^(id<AYQuery> collection){
-        if (collection.query.count < 1) {
-            return self.queryable.query;
-        }
-        
-        NSMutableArray *result = self.queryable.mutableCopy;
-        [result addObjectsFromArray:collection.query.toArray()];
-        return result.query;
     };
 }
 
