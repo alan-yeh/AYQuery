@@ -362,6 +362,14 @@
     };
 }
 
+- (AYQueryable * (^)(Class))ofType{
+    return ^(Class class){
+        return self.findAll(^(id item){
+            return [item isKindOfClass:class];
+        });
+    };
+}
+
 - (NSString *(^)(NSString *))join{
     return ^(NSString *seperator){
         NSMutableString *result = [NSMutableString string];

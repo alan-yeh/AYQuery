@@ -60,6 +60,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (readonly) AYQueryable *(^distinct)();/**< 去重 */
 @property (readonly) AYQueryable *(^reverse)();/**< 反序 */
 @property (readonly) AYQueryable *(^flatten)();/**< 扁平化 */
+@property (readonly) AYQueryable *(^ofType)(Class);/**< 过滤集合里的指定类型的item */
 @property (readonly) NSString *(^join)(NSString *seperator);/**< 将所有item连接起来 */
 @property (readonly) AYQueryable *(^except)(id<AYQuery>);/**< 移除两个集合的交集 */
 @property (readonly) AYQueryable *(^intersect)(id<AYQuery>);/**< 两个集合的交集 */
