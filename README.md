@@ -56,7 +56,7 @@ data.reserseEach(^(id item){
 | find | 查找满足条件的第一个item | 返回bool值，YES为符合条件，NO为不符合 |
 | findAll | 查找满足条件的item | 返回bool值，YES为符合条件，NO为不符合 |
 | ofType | 筛选符合类型的item |  |
-| except | 排除两个集合的交集 | NONE |
+| exclude | 排除两个集合的交集 | NONE |
 | intersect | 取两个集合的交集 | NONE |
 | select | 在每一个item上执行操作并返回一个结果，将结果组成集合 | 返回新类型的item |
 | selectMany | 在每一个item上执行操作并返回一个结果集合，将结果集合组成一个集合 | 返回新类型的item |
@@ -82,7 +82,7 @@ NSArray *typedArray = [@[@1, @5, @9, @3, AYPairMake(@"key1", @"value1"), AYPairM
 XCTAsset([@[@1, @5, @9, @3] isEqualToArray:typedArray]);
 
 //移除两个集合的交集
-NSArray *exceptedArray = data.query.except(@[@55, @0, @3]).toArray();
+NSArray *exceptedArray = data.query.exclude(@[@55, @0, @3]).toArray();
 isEquals = [exceptedArray isEqualToArray:@[@1, @9, @9, @-4]];
 XCTAssert(isEquals);
 
@@ -124,7 +124,7 @@ NSDictionary<String, NSArray<Student *> *> *stu.query.gorupBy(^(Student *stu){
 | orderBy | 排序 | NSComparisonResult |
 | reverse | 反序 | NONE |
 | faltten | 扁平化 |  |
-| unionAll | 合并两个集合 |  |
+| include | 合并两个集合 |  |
 
 ```objective-c
 NSArray *data = @[@1, @3, @9, @0, @9, @-4, @55];
@@ -169,8 +169,8 @@ NSArray *flattenedArray = @[@1, @5, @[@9, @3], @{@"key1": @"value1", @"key2", @"
 XCTAsset([@[@1, @5, @9, @3, AYPairMake(@"key1", @"value1"), AYPairMake(@"key2", @"value2"), @"aa"] isEquarlToArray: flattenedArray]);
 
 //合并两个集合
-NSArray *unionedArray = data.query.unionAll(@[@450, @888, @808]).toArray();
-isEquals = [unionedArray isEqualToArray:@[@1, @3, @9, @0, @9, @-4, @55, @450, @888, @808]];
+NSArray *includedArray = data.query.include(@[@450, @888, @808]).toArray();
+isEquals = [includedArray isEqualToArray:@[@1, @3, @9, @0, @9, @-4, @55, @450, @888, @808]];
 XCTAssert(isEquals);
 ```
 

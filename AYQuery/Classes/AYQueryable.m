@@ -135,7 +135,7 @@
     };
 }
 
-- (AYQueryable *(^)(id<AYQuery>))except{
+- (AYQueryable *(^)(id<AYQuery>))exclude{
     return ^(id<AYQuery> collection){
         NSSet *removedMe = collection.query.toSet();
         if (removedMe.count < 1) {
@@ -313,7 +313,7 @@
     };
 }
 
-- (AYQueryable *(^)(id<AYQuery>))unionAll{
+- (AYQueryable *(^)(id<AYQuery>))include{
     return ^(id<AYQuery> collection){
         if (collection.query.count < 1) {
             return self.queryable.query;
