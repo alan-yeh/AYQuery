@@ -1,7 +1,7 @@
 PODS:
   - AYCategory (1.0.7):
     - AYRuntime
-  - AYQuery (2.1.3):
+  - AYQuery (2.1.4):
     - AYRuntime
   - AYRuntime (1.0.4)
 
@@ -15,7 +15,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   AYCategory: 26a4df62af2d5444d55a1440805359e5361d7015
-  AYQuery: c61536423db838e1645013bcb30c4fd68e6a1cec
+  AYQuery: ad3ef8c1c99ef29ba20dd2589bdf6da95da1ec3e
   AYRuntime: 3052eedd222ae63314fefbd525c4940a6bc1e699
 
 PODFILE CHECKSUM: 27888030ca80bb0ddfe9a7c7c6a34689f9d104d9

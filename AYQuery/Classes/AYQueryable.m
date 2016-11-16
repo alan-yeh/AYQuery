@@ -135,9 +135,20 @@
     };
 }
 
-- (AYQueryable *(^)(id<AYQuery>))exclude{
-    return ^(id<AYQuery> collection){
-        NSSet *removedMe = collection.query.toSet();
+- (AYQueryable *(^)(id))exclude{
+    return ^(id/*<AYQuery>*/ item){
+        if (item == nil) {
+            return self.query;
+        }
+        
+        NSSet *removedMe = nil;
+        if ([item conformsToProtocol:@protocol(AYQuery)]) {
+            id<AYQuery> queryable = item;
+            removedMe = queryable.query.toSet();
+        }else{
+            removedMe = [NSSet setWithObject:item];
+        }
+        
         if (removedMe.count < 1) {
             return self;
         }
@@ -313,15 +324,26 @@
     };
 }
 
-- (AYQueryable *(^)(id<AYQuery>))include{
-    return ^(id<AYQuery> collection){
-        if (collection.query.count < 1) {
+- (AYQueryable *(^)(id))include{
+    return ^(id/*<AYQuery>*/ item){
+        if (item == nil) {
             return self.queryable.query;
         }
+        if ([item conformsToProtocol:@protocol(AYQuery)]) {
+            id<AYQuery> queryable = item;
+            if (queryable.query.count < 1) {
+                return self.queryable.query;
+            }
+            
+            NSMutableArray *result = self.queryable.mutableCopy;
+            [result addObjectsFromArray:queryable.query.toArray()];
+            return result.query;
+        }else{
+            NSMutableArray *result = self.queryable.mutableCopy;
+            [result addObject:item];
+            return result.query;
+        }
         
-        NSMutableArray *result = self.queryable.mutableCopy;
-        [result addObjectsFromArray:collection.query.toArray()];
-        return result.query;
     };
 }
 
