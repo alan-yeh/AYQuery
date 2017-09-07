@@ -136,7 +136,8 @@
 }
 
 - (AYQueryable *(^)(id))exclude{
-    return ^(id/*<AYQuery>*/ item){
+    /* item 可能是id类型，也可能是id<AYQuery>类型 */
+    return ^(id item){
         if (item == nil) {
             return self.query;
         }
@@ -325,7 +326,8 @@
 }
 
 - (AYQueryable *(^)(id))include{
-    return ^(id/*<AYQuery>*/ item){
+    /* item 可能是id类型，也可能是id<AYQuery>类型 */
+    return ^(id item){
         if (item == nil) {
             return self.queryable.query;
         }

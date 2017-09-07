@@ -29,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (readonly) _Nullable id (^find)(BOOL(^)(id));/**< 查找满足条件的第一个item */
 @property (readonly) AYQueryable *(^findAll)(BOOL(^)(id));/**< 查找满足条件的所有item */
 @property (readonly) AYQueryable *(^ofType)(Class);/**< 筛选集合里的指定类型的item */
-@property (readonly) AYQueryable *(^exclude)(id/*<AYQuery>*/);/**< 移除两个集合的交集 */
+@property (readonly) AYQueryable *(^exclude)(id);/**< 移除两个集合的交集, 可以是id类型，也可以是id<AYQuery>类型 */
 @property (readonly) AYQueryable *(^intersect)(id<AYQuery>);/**< 两个集合的交集 */
 @property (readonly) AYQueryable *(^select)(id(^)(id));/**< 在每一个item上执行操作并返回一个结果集 */
 @property (readonly) AYQueryable *(^selectMany)(id(^)(id));/**< 在每一个item上执行操作并返回一个结果集, 并结果集扁平化（相当于在select().faltten()） */
@@ -48,7 +48,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (readonly) AYQueryable *(^orderBy)(NSComparisonResult(^)(id, id));/**< 排序 */
 @property (readonly) AYQueryable *(^reverse)();/**< 反序 */
 @property (readonly) AYQueryable *(^flatten)();/**< 扁平化 */
-@property (readonly) AYQueryable *(^include)(id/*<AYQuery>*/);/**< 合并两个集合，或者添加一个元素 */
+@property (readonly) AYQueryable *(^include)(id);/**< 合并两个集合，或者添加一个元素, 可以是id类型，也可以是id<AYQuery>类型 */
 @end
 
 // 操作
