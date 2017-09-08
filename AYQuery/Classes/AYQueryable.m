@@ -6,9 +6,7 @@
 //
 //
 
-#import "AYQueryable.h"
-#import "AYPair.h"
-#import "AYQueryableExtension.h"
+#import "AYQuery.h"
 #import <AYRuntime/AYRuntime.h>
 
 @interface AYQueryable ()

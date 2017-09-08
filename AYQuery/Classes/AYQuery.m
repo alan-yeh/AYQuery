@@ -6,9 +6,7 @@
 //
 //
 
-#import "AYQueryableExtension.h"
-#import "AYQueryable.h"
-#import "AYPair.h"
+#import "AYQuery.h"
 
 @implementation NSArray (AYQuery)
 - (AYQueryable *)query{

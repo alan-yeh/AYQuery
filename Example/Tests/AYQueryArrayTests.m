@@ -197,11 +197,11 @@
     BOOL isEquals = [@"1+3+9+0+9+-4+55" isEqualToString:joinString];
     XCTAssert(isEquals);
     
-    NSArray *minusedArray = data.query.except(@[@55, @0, @3]).toArray();
+    NSArray *minusedArray = data.query.exclude(@[@55, @0, @3]).toArray();
     isEquals = [minusedArray isEqualToArray:@[@1, @9, @9, @-4]];
     XCTAssert(isEquals);
     
-    NSArray *addedArray = data.query.unionAll(@[@920, @658]).toArray();
+    NSArray *addedArray = data.query.include(@[@920, @658]).toArray();
     isEquals = [addedArray isEqualToArray:@[@1, @3, @9, @0, @9, @-4, @55, @920, @658]];
     XCTAssert(isEquals);
     
