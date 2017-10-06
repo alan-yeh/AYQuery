@@ -44,18 +44,18 @@ NS_ASSUME_NONNULL_BEGIN
 @property (readonly) AYQueryable *(^take)(NSUInteger);/**< 取N个item */
 @property (readonly) AYQueryable *(^takeWhile)(BOOL(^)(id));/**< 取N个item，直至满足条件 */
 @property (readonly) AYQueryable *(^rangeOf)(NSUInteger, NSUInteger);/**< 取范围内的item */
-@property (readonly) AYQueryable *(^distinct)();/**< 去重 */
+@property (readonly) AYQueryable *(^distinct)(void);/**< 去重 */
 @property (readonly) AYQueryable *(^orderBy)(NSComparisonResult(^)(id, id));/**< 排序 */
-@property (readonly) AYQueryable *(^reverse)();/**< 反序 */
-@property (readonly) AYQueryable *(^flatten)();/**< 扁平化 */
+@property (readonly) AYQueryable *(^reverse)(void);/**< 反序 */
+@property (readonly) AYQueryable *(^flatten)(void);/**< 扁平化 */
 @property (readonly) AYQueryable *(^include)(id);/**< 合并两个集合，或者添加一个元素, 可以是id类型，也可以是id<AYQuery>类型 */
 @end
 
 // 操作
 @interface AYQueryable (Operation)
-@property (readonly) _Nullable id (^first)();/**< 第一个item，如果query没有item则返回nil */
+@property (readonly) _Nullable id (^first)(void);/**< 第一个item，如果query没有item则返回nil */
 @property (readonly) id (^firstOrDefault)(id);/**< 第一个item，如果query没有item则返回default */
-@property (readonly) _Nullable id (^last)();/**< 最后一个item，如果query没有item则返回nil */
+@property (readonly) _Nullable id (^last)(void);/**< 最后一个item，如果query没有item则返回nil */
 @property (readonly) id (^lastOrDefault)(id);/**< 最后一个item，如果query没有item则返回default */
 @property (readonly) _Nullable id (^get)(NSUInteger);/**< 取第N个item，如果N为负数，则从后开始取值，如果超界了，则返回nil */
 @property (readonly) id (^getOrDefault)(NSUInteger, id);/**< 取第N个item，如果N为负数，则从后开始取值，如果nil，则返回default */
@@ -71,8 +71,8 @@ NS_ASSUME_NONNULL_BEGIN
 // 转化为NSDictionary、NSArray、NSSet
 @interface AYQueryable (Convert)
 @property (readonly) NSDictionary *(^toDictionary)(AYPair *(^_Nullable)(id));/**< 转换成dictionary */
-@property (readonly) NSArray *(^toArray)();/**< 转换成array */
-@property (readonly) NSSet *(^toSet)();/**< 转换成set */
+@property (readonly) NSArray *(^toArray)(void);/**< 转换成array */
+@property (readonly) NSSet *(^toSet)(void);/**< 转换成set */
 @end
 
 NS_ASSUME_NONNULL_END

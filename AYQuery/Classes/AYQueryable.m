@@ -281,8 +281,8 @@
     };
 }
 
-- (AYQueryable * (^)())distinct{
-    return ^(){
+- (AYQueryable * (^)(void))distinct{
+    return ^(void){
         NSMutableOrderedSet *result = [NSMutableOrderedSet orderedSetWithArray:self.queryable];
         return result.query;
     };
@@ -295,8 +295,8 @@
     };
 }
 
-- (AYQueryable * (^)())reverse{
-    return ^(){
+- (AYQueryable * (^)(void))reverse{
+    return ^(void){
         NSEnumerator *reversedEnumerator = self.queryable.reverseObjectEnumerator;
         NSMutableArray *result = [NSMutableArray new];
         id obj;
@@ -307,8 +307,8 @@
     };
 }
 
-- (AYQueryable *(^)())flatten{
-    return ^(){
+- (AYQueryable *(^)(void))flatten{
+    return ^(void){
         NSMutableArray *result = [NSMutableArray new];
         
         for (id<AYQuery> value in self.queryable) {
@@ -351,8 +351,8 @@
 
 @implementation AYQueryable (Operation)
 
-- (id (^)())first{
-    return ^(){
+- (id (^)(void))first{
+    return ^(void){
         return self[0];
     };
 }
@@ -363,8 +363,8 @@
     };
 }
 
-- (id (^)())last{
-    return ^(){
+- (id (^)(void))last{
+    return ^(void){
         return self[-1];
     };
 }
@@ -482,14 +482,14 @@
     };
 }
 
-- (NSArray *(^)())toArray{
-    return ^(){
+- (NSArray *(^)(void))toArray{
+    return ^(void){
         return self.queryable;
     };
 }
 
-- (NSSet *(^)())toSet{
-    return ^(){
+- (NSSet *(^)(void))toSet{
+    return ^(void){
         return [NSSet setWithArray:self.queryable];
     };
 }
