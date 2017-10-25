@@ -393,7 +393,7 @@
             return nil;
         }
         NSArray *result = [self.queryable sortedArrayUsingComparator:cmptr];
-        return result.firstObject;
+        return result.lastObject;
     };
 }
 
@@ -403,7 +403,7 @@
             return nil;
         }
         self.queryable = [self.queryable sortedArrayUsingComparator:cmptr];
-        return self.queryable.lastObject;
+        return self.queryable.firstObject;
     };
 }
 
